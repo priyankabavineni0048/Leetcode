@@ -1,0 +1,17 @@
+class Solution {
+    public double averageWaitingTime(int[][] customers) {
+       int cT=0;
+       long twT=0;
+       for(int[] c : customers){
+        int a=c[0];
+        int b=c[1];
+        if(cT<a){
+            cT=a;
+        }
+        int wT=cT+b-a;
+        twT+=wT;
+        cT+=b;
+       } 
+       return (double) twT/customers.length;
+    }
+}
