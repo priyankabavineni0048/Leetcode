@@ -1,0 +1,18 @@
+class Solution {
+    public int minOperations(String[] logs) {
+       int a = 0;
+       for (String l : logs) {
+          switch (l) {
+        case "../":
+            if (a > 0) a--;
+            break;
+        case "./":
+            break;
+        default:
+            a++;
+            break;
+        }
+    }
+      return a; 
+    }
+}
