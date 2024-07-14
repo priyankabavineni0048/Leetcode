@@ -1,0 +1,66 @@
+class Solution {
+    private int index;
+
+    public String countOfAtoms(String formula) {
+        index = 0;
+        Map<String, Integer> atomCounts = parseFormula(formula);
+        StringBuilder result = new StringBuilder();
+        
+        for (String atom : atomCounts.keySet()) {
+            result.append(atom);
+            int count = atomCounts.get(atom);
+            if (count > 1) {
+                result.append(count);
+            }
+        }
+        
+        return result.toString();
+    }
+    
+    private Map<String, Integer> parseFormula(String formula) {
+        Map<String, Integer> counts = new TreeMap<>();
+        int n = formula.length();
+
+        while (index < n && formula.charAt(index) != ')') {
+            if (formula.charAt(index) == '(') {
+                index++;
+                Map<String, Integer> innerCounts = parseFormula(formula);
+                int multiplier = parseMultiplier(formula);
+                for (String atom : innerCounts.keySet()) {
+                    counts.put(atom, counts.getOrDefault(atom, 0) + innerCounts.get(atom) * multiplier);
+                }
+            } else {
+                String atom = parseAtom(formula);
+                int count = parseMultiplier(formula);
+                counts.put(atom, counts.getOrDefault(atom, 0) + count);
+            }
+        }
+
+        index++; // Skip ')'
+        return counts;
+    }
+    
+    private String parseAtom(String formula) {
+        StringBuilder atom = new StringBuilder();
+        atom.append(formula.charAt(index++)); // First letter is always uppercase
+        
+        while (index < formula.length() && Character.isLowerCase(formula.charAt(index))) {
+            atom.append(formula.charAt(index++));
+        }
+        
+        return atom.toString();
+    }
+    
+    private int parseMultiplier(String formula) {
+        if (index >= formula.length() || !Character.isDigit(formula.charAt(index))) {
+            return 1;
+        }
+
+        int multiplier = 0;
+        while (index < formula.length() && Character.isDigit(formula.charAt(index))) {
+            multiplier = multiplier * 10 + formula.charAt(index++) - '0';
+        }
+        
+        return multiplier;
+    }
+}
