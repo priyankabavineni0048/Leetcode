@@ -1,0 +1,22 @@
+class Solution {
+    public int[][] restoreMatrix(int[] rowSum, int[] colSum) {
+        int numRows = rowSum.length;
+        int numCols = colSum.length;
+        int[][] matrix = new int[numRows][numCols];
+        int row = 0, col = 0;
+        while (row < numRows && col < numCols) {
+            int minValue = Math.min(rowSum[row], colSum[col]);
+            matrix[row][col] = minValue;
+            rowSum[row] -= minValue;
+            colSum[col] -= minValue;
+            if (rowSum[row] == 0) {
+                row++;
+            }
+            if (colSum[col] == 0) {
+                col++;
+            }
+        }
+
+        return matrix;
+    }
+}
