@@ -1,0 +1,29 @@
+class Solution {
+    public int[] sortJumbled(int[] mapping, int[] nums) {
+        TreeMap<Integer, List<Integer>> map = new TreeMap<>();
+        for (int num : nums) {
+            int mappedValue = getMappedValue(num, mapping);
+            map.computeIfAbsent(mappedValue, k -> new ArrayList<>()).add(num);
+        }
+        int[] sortedNums = new int[nums.length];
+        int index = 0;
+        for (List<Integer> list : map.values()) {
+            for (int num : list) {
+                sortedNums[index++] = num;
+            }
+        }
+
+        return sortedNums;
+    }
+
+    private int getMappedValue(int num, int[] mapping) {
+        StringBuilder mappedString = new StringBuilder();
+        String numStr = Integer.toString(num);
+
+        for (char ch : numStr.toCharArray()) {
+            mappedString.append(mapping[ch - '0']);
+        }
+
+        return Integer.parseInt(mappedString.toString());
+    }
+}
