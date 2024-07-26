@@ -1,0 +1,65 @@
+import java.util.*;
+
+class Solution {
+    public int findTheCity(int n, int[][] edges, int distanceThreshold) {
+        List<int[]>[] graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        for (int[] edge : edges) {
+            graph[edge[0]].add(new int[]{edge[1], edge[2]});
+            graph[edge[1]].add(new int[]{edge[0], edge[2]});
+        }
+
+        int ans = -1;
+        int mini = Integer.MAX_VALUE;
+
+        for (int i = 0; i < n; i++) {
+            int[] distance = dijkstra(graph, i, n);
+            int count = 0;
+            for (int j = 0; j < n; j++) {
+                if (i != j && distance[j] <= distanceThreshold) {
+                    count++;
+                }
+            }
+            if (count <= mini) {
+                mini = count;
+                ans = i;
+            }
+        }
+
+        return ans;
+    }
+
+    private int[] dijkstra(List<int[]>[] graph, int start, int n) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]));
+        int[] distance = new int[n];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[start] = 0;
+        pq.add(new int[]{start, 0});
+
+        while (!pq.isEmpty()) {
+            int[] current = pq.poll();
+            int u = current[0];
+            int dist = current[1];
+
+            if (dist > distance[u]) {
+                continue;
+            }
+
+            for (int[] neighbor : graph[u]) {
+                int v = neighbor[0];
+                int weight = neighbor[1];
+                int newDist = dist + weight;
+
+                if (newDist < distance[v]) {
+                    distance[v] = newDist;
+                    pq.add(new int[]{v, newDist});
+                }
+            }
+        }
+
+        return distance;
+    }
+}
