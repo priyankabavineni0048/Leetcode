@@ -1,0 +1,42 @@
+import java.util.*;
+
+class Solution {
+    public int secondMinimum(int n, int[][] edges, int time, int change) {
+        List<Integer>[] graph = new List[n + 1];
+        for (int i = 1; i <= n; ++i) {
+            graph[i] = new ArrayList<>();
+        }
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+        int[][] minTime = new int[n + 1][2];
+        for (int[] times : minTime) {
+            Arrays.fill(times, Integer.MAX_VALUE);
+        }
+        minTime[1][0] = 0;
+        Queue<int[]> q = new ArrayDeque<>();
+        q.offer(new int[] {1, 0});
+        while (!q.isEmpty()) {
+            int[] current = q.poll();
+            int node = current[0];
+            int prevTime = current[1];
+            int numChangeSignal = prevTime / change;
+            int waitTime = numChangeSignal % 2 == 0 ? 0 : change - prevTime % change;
+            int newTime = prevTime + waitTime + time;
+            for (int neighbor : graph[node]) {
+                if (newTime < minTime[neighbor][0]) {
+                    minTime[neighbor][1] = minTime[neighbor][0];
+                    minTime[neighbor][0] = newTime;
+                    q.offer(new int[] {neighbor, newTime});
+                } else if (newTime > minTime[neighbor][0] && newTime < minTime[neighbor][1]) {
+                    minTime[neighbor][1] = newTime;
+                    q.offer(new int[] {neighbor, newTime});
+                }
+            }
+        }
+        return minTime[n][1];
+    }
+}
