@@ -1,0 +1,88 @@
+class Solution {
+  private static final int kMax = 2_000_000_000;
+
+  public int[][] modifiedGraphEdges(int n, int[][] edges, int source, int destination, int target) {
+    List<int[]>[] graph = new List[n];
+
+    for (int i = 0; i < n; i++) {
+      graph[i] = new ArrayList<>();
+    }
+
+    for (int[] edge : edges) {
+      int u = edge[0];
+      int v = edge[1];
+      int w = edge[2];
+      if (w != -1) {
+        graph[u].add(new int[]{v, w});
+        graph[v].add(new int[]{u, w});
+      }
+    }
+
+    int distToDestination = dijkstra(graph, source, destination, n);
+    if (distToDestination < target) {
+      return new int[0][];
+    }
+    if (distToDestination == target) {
+      for (int[] edge : edges) {
+        if (edge[2] == -1) {
+          edge[2] = kMax;
+        }
+      }
+      return edges;
+    }
+
+    for (int i = 0; i < edges.length; ++i) {
+      int u = edges[i][0];
+      int v = edges[i][1];
+      int w = edges[i][2];
+      if (w != -1) {
+        continue;
+      }
+      edges[i][2] = 1;
+      graph[u].add(new int[]{v, 1});
+      graph[v].add(new int[]{u, 1});
+      distToDestination = dijkstra(graph, source, destination, n);
+      if (distToDestination <= target) {
+        edges[i][2] += target - distToDestination;
+        for (int j = i + 1; j < edges.length; ++j) {
+          if (edges[j][2] == -1) {
+            edges[j][2] = kMax;
+          }
+        }
+        return edges;
+      }
+    }
+
+    return new int[0][];
+  }
+
+  private int dijkstra(List<int[]>[] graph, int src, int dst, int n) {
+    int[] dist = new int[n];
+    Arrays.fill(dist, Integer.MAX_VALUE);
+    PriorityQueue<int[]> minHeap = new PriorityQueue<>(Comparator.comparingInt(a -> a[0]));
+
+    dist[src] = 0;
+    minHeap.offer(new int[]{0, src});
+
+    while (!minHeap.isEmpty()) {
+      int[] current = minHeap.poll();
+      int d = current[0];
+      int u = current[1];
+
+      if (d > dist[u]) {
+        continue;
+      }
+
+      for (int[] neighbor : graph[u]) {
+        int v = neighbor[0];
+        int w = neighbor[1];
+        if (d + w < dist[v]) {
+          dist[v] = d + w;
+          minHeap.offer(new int[]{dist[v], v});
+        }
+      }
+    }
+
+    return dist[dst];
+  }
+}
