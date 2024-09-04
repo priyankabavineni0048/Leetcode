@@ -1,0 +1,33 @@
+public class Solution {
+    public int robotSim(int[] commands, int[][] obstacles) {
+        final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int x = 0, y = 0;  
+        int direction = 0;  
+        int maxDist = 0;   
+        Set<String> obstacleSet = new HashSet<>();
+        for (int[] obstacle : obstacles) {
+            obstacleSet.add(obstacle[0] + "," + obstacle[1]);
+        }
+        for (int command : commands) {
+            if (command == -1) {
+                direction = (direction + 1) % 4;  
+            } else if (command == -2) {
+                direction = (direction + 3) % 4; 
+            } else {
+                for (int step = 0; step < command; ++step) {
+                    int nextX = x + dirs[direction][0];
+                    int nextY = y + dirs[direction][1];
+                    if (!obstacleSet.contains(nextX + "," + nextY)) {
+                        x = nextX;
+                        y = nextY;
+                        maxDist = Math.max(maxDist, x * x + y * y);
+                    } else {
+                        break;  
+                    }
+                }
+            }
+        }
+
+        return maxDist;
+    }
+}
